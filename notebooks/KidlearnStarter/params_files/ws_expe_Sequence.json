@@ -10,7 +10,7 @@
         "algo_name" : "Sequence",
         "seq_path": {
                 "params_file" : "expe_seq",
-                "directory" : "sequence_def"
+                "directory" : "graph"
         },
     
          "RT": { 
