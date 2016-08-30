@@ -1,6 +1,7 @@
 {
     "act_prime" : "MAIN",
     "KC":["KnowMoney", "IntSum", "IntSub",  "IntDec",  "DecSum", "DecSub", "DecDec"],
+    "ncompetencies":7,
 
     "MAIN":{
         "actions":"ExType_H",
