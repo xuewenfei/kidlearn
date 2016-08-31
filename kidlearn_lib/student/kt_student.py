@@ -11,7 +11,6 @@
 
 #-------------------------------------------------------------------------------
 import numpy as np
-import scipy.stats as sstats
 from operator import mul
 
 from .student import Student
