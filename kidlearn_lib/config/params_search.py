@@ -14,7 +14,6 @@ import numpy as np
 import copy as copy
 import json
 import os
-from scipy.optimize import curve_fit
 
 from . import config
 from ..functions import functions as func
