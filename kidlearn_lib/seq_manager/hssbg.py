@@ -357,7 +357,7 @@ class SSbandit(object):
         norm_v = sum(nn)
         for i in range(0, len(nn)):
             if nn[i] > 0:
-                nn[i] = nn[i] + norm_v / exploration_coeff
+                nn[i] = 1#nn[i] + norm_v / exploration_coeff
 
         nb_0 = 0
         for i in range(0, len(nn)):

@@ -273,11 +273,10 @@ class ZpdesSsb(SSbandit):
         # and imax not in self.use_to_active: # and first < len(self.bandval) -
         # 3:
         if succrate_active > self.upZPDval and 0 in self.len_success():
-            self.bandval[self.len_success().index(0)] = max(
+            self.bandval[self.len_success().index(0)] = min(
                 [self.bandval[x] for x in self.active_bandits()]) * self.promote_coeff
 
-        max_usable_val_to_deact = [self.success_rate(-self.stepUpdate, val=[
-                                                     x]) for x in self.active_bandits() if self.len_success()[x] >= self.stepUpdate]
+        max_usable_val_to_deact = [self.success_rate(-self.stepUpdate, val=[x]) for x in self.active_bandits() if self.len_success()[x] >= self.stepUpdate]
 
         if len(max_usable_val_to_deact) > 0:
             imaxd = self.active_bandits()[np.argmax(max_usable_val_to_deact)]
@@ -287,7 +286,8 @@ class ZpdesSsb(SSbandit):
             # imaxd != self.nval-1:
             if max_succrate_active_todeact > self.deactZPDval and self.bandval.count(0) < len(self.bandval) - 1:
                 # if self.bandval.count(0) < len(self.bandval)-1:
-                self.bandval[imaxd] = self.bandval[imaxd] * pow(10, -4)
+                self.bandval[imaxd] = 0 # self.bandval[imaxd] * pow(10, -10)
+                # print self.bandval
 
     def spe_promote_windows(self):
         # Promote initialisation for beginning of the sequence with less than

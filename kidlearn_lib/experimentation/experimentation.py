@@ -148,7 +148,7 @@ class WorkingSession(object):
     def run(self, nb_ex):
         for i in range(nb_ex):
             self.step_forward()
-        self.free_data()
+        #self.free_data()
 
     def step_forward(self):
         ex = self.new_exercise()
@@ -461,6 +461,10 @@ class Experiment(object):
     def save(self):
         datafile.save_file(self, self._ref_simu, self.save_path)
 
+    def save_act_obs(self, begin_time=1, end_time=None):
+        act_obs = self.get_act_obs(begin_time, end_time)
+        func.write_in_file("{}act_obs.json".format(self.save_path), json.dumps(act_obs))
+        
     def load(self, filename="sim"):
         # TODO
         return

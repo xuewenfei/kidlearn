@@ -564,10 +564,10 @@ def kt_expe(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=100, n
     #wG_random = k_lib.experimentation.WorkingGroup(WorkingSessions=ws_tab_random)
 
     wkgs = {
-        "POMDP": [wG_pomdp],
-        "ZPDES": [wG_zpdes],
-        #"Random": [wG_random],
-        "ZPDES2": [wG_zpdesOpt]
+        #"POMDP": [wG_pomdp],
+        #"ZPDES": [wG_zpdes],
+        "Random": [wG_random],
+        #"ZPDES2": [wG_zpdesOpt]
     }  # , "RIARIT": [wG_riarit]} # {"ZPDES": [wG_zpdes]} #
 
     ref_xp_bis = "{}{}".format(ref_xp, ref_bis)
@@ -731,12 +731,12 @@ def multi_kt_xp(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=10
     wG_random = k_lib.experimentation.WorkingGroup(WorkingSessions=ws_tab_random)
 
     wkgs = {
-        "POMDP": wG_pomdp,
-        "ZpdesH": wG_zpdes,
-        "Zpdes*": wG_zpdes2,
+        # "POMDP": wG_pomdp,
+        # "ZpdesH": wG_zpdes,
+        # "Zpdes*": wG_zpdes2,
     }
-    if len(refs_stud) == 1:
-        wkgs["Random"] = [wG_random]
+    #if len(refs_stud) == 1:
+    wkgs["Random"] = [wG_random]
     # , "RIARIT": [wG_riarit]} # {"ZPDES": [wG_zpdes]} #
 
     ref_xp_bis = "{}{}".format(ref_xp, ref_bis)
