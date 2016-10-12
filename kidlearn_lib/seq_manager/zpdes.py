@@ -11,6 +11,7 @@
 # -------------------------------------------------------------------------
 
 import numpy as np
+import itertools
 
 from .riarit import RiaritHssbg  # , RiaritSsbg , RiaritSsb
 from .hssbg import HierarchicalSSBG, SSBanditGroup, SSbandit
@@ -67,7 +68,8 @@ class ZpdesHssbg(HierarchicalSSBG):
             graph_def = func.load_json(
                 graph_infos["file_name"], graph_infos["path"])
 
-        self.ncompetencies = graph_def["ncompetencies"]
+        if "ncompetencies" in graph_def.keys():
+            self.ncompetencies = graph_def["ncompetencies"]
         graph_def["current_ssbg"] = graph_def["act_prime"]
         mainSSBG = self.instantiate_ssbg(graph_def)
         self.SSBGs = {}
@@ -132,8 +134,7 @@ class ZpdesSsbg(SSBanditGroup):
         if "actions" in ssbg_def.keys():
             self.actions = ssbg_def["actions"]
         else:
-            self.actions = [
-                "{}_act{}".format(self.ID, x) for x in range(self.nactions)]
+            self.actions = ["{}_act{}".format(self.ID, x) for x in range(self.nactions)]
 
         if "nb_stay" in ssbg_def.keys():
             self.nb_stay = ssbg_def["nb_stay"]
@@ -144,10 +145,14 @@ class ZpdesSsbg(SSBanditGroup):
         self.param_values = [[] for i in range(self.nactions)]
         self.values_children = [[] for i in range(self.nactions)]
         self.nvalue = []
+        
+        x = ["".join(i) for i in itertools.product(*ssbg_def["ssbg"])]
+        #print x
 
         for act in range(self.nactions):
             self.nvalue.append(len(ssbg_def["ssbg"][act]))
             for val in ssbg_def["ssbg"][act]:
+                # If value in graph_def add 1 to values_children to generate a new SSBG
                 self.values_children[act].append(int(val in graph_def.keys()))
                 self.param_values[act].append(val)
 
@@ -322,8 +327,13 @@ class ZpdesSsb(SSbandit):
     def promote(self, init=False):
         # Promote if initialisation
         if init is True:
-            for ii in self.init_ssb:
-                self.bandval[ii] = self.uniformval  # /pow((ii+1),7)
+            if not self.is_hierarchical:
+                for ii in range(len(self.bandval)):
+                    self.bandval[ii] = self.uniformval
+            else:
+                for ii in self.init_ssb:
+                    self.bandval[ii] = self.uniformval  # /pow((ii+1),7)
+
 
         elif self.is_hierarchical:
 
