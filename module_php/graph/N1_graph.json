@@ -1,0 +1,11 @@
+{
+    "act_prime" : "N1",
+    "ncompetencies":3,
+    "N1":{
+        "actions":["Act1","Act2","Act3"],
+        "h": [1,0,0],
+        "ssbg" : [["V1","V2","V3"],
+                  ["V1","V2"],
+                  ["V1","V2"]]
+    }
+}
