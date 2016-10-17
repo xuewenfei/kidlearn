@@ -13,15 +13,15 @@ def main(argv):
     stud_id = ''
     last_result = ''
 
-    opts, args = getopt.getopt(argv, "hi:o:r:", ["ifile=", "stud_id=", "res="])
+    opts, args = getopt.getopt(argv, "hi:s:r:", ["ifile=", "stud_id=", "res="])
     for opt, arg in opts:
         print opt, arg
         if opt == '-h':
-            print 'test.py -i <inputfile> -o <stud_id>'
+            print 'test.py -i <inputfile> -s <stud_id>'
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
-        elif opt in ("-o", "--l_ex"):
+        elif opt in ("-s", "--l_ex"):
             stud_id = arg
         elif opt in ("-r", "--r"):
             last_result = float(arg)
