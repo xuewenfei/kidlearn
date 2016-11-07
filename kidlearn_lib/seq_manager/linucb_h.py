@@ -58,7 +58,7 @@ class HybridUCB:
         self.a_max = 0
 
         self.z = None
-        self.zT = None
+        self.zT = Nonein htdocs folder
         self.xaT = None
         self.xa = None
 
@@ -151,7 +151,7 @@ class HybridUCB:
     # This function will be called by the evaluator.
     # Check task description for details.
     # Use vectorized code to increase speed
-    def reccomend(self, timestamp, user_features, articles):
+    def sample(self, timestamp, user_features, articles):
         article_len = len(articles)
         # za : feature of current user/article combination, k*1
         self.xaT = np.array([user_features[1:]])

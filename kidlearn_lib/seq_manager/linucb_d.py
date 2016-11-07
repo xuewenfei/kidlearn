@@ -26,7 +26,7 @@ class LinUCB(object):
         self.r1 = 0.5  # if worse -> 0.7, 0.8
         self.r0 = -20  # if worse, -19, -21
         # dimension of user features = d
-        self.d = 6
+        self.d = 4
         # Aa : collection of matrix to compute disjoint part for each article a, d*d
         self.Aa = {}
         # AaI : store the inverse of all Aa matrix
@@ -65,7 +65,7 @@ class LinUCB(object):
             # error
             pass
 
-    def reccomend(self, timestamp, context, articles):
+    def sample(self, timestamp, context, articles):
         xaT = np.array([context])
         xa = np.transpose(xaT)
         #art_max = -1

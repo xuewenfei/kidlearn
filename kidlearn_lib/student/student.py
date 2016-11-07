@@ -21,17 +21,19 @@ import uuid
 from ..knowledge import Knowledge
 from .. import functions as func
 
+
 class Student(object):
 
     def __init__(self, id="x", params=None):
         self.uuid = str(uuid.uuid1())
         self.params = params
-        func.setattr_dic_or_default(self,"_id",params,id)
+        func.setattr_dic_or_default(self, "_id", params, id)
+        func.setattr_dic_or_default(self, "_features", params, [])
         self._knowledges = []
         self.logs = {}
-        #self._skills = skills
+        # self._skills = skills
         return
-    
+
     @property
     def state(self):
         student_state = {}
@@ -42,7 +44,7 @@ class Student(object):
 
     @property
     def KC_names(self):
-        return self.params["knowledge_names"] 
+        return self.params["knowledge_names"]
 
     def get_kc_lvl(self):
         return np.array([kc._level for kc in self._knowledges])
@@ -63,8 +65,8 @@ class Student(object):
         nb_try = 0
         ans = 0
         while ans == 0 and nb_try < exercise.nbMax_try:
-            s = np.random.multinomial(1,[1-prob_correct,prob_correct])
-            ans = np.nonzero(s==1)[0][0]
+            s = np.random.multinomial(1, [1 - prob_correct, prob_correct])
+            ans = np.nonzero(s == 1)[0][0]
             if ans == 0:
                 nb_try += 1
 
@@ -72,4 +74,3 @@ class Student(object):
         exercise._answer = ans
         exercise.add_attr(_nb_try=nb_try)
         return exercise
-

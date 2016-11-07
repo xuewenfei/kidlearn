@@ -4,6 +4,7 @@ from .zpdes import * #ZpdesHssbg
 from .teacher_sequence import Sequence
 from .random_sequence import RandomSequence
 from .pomdp import POMDP,perseus
+from .linucb_d import LinUCB
 
 seq_dict_gen = {}
 seq_dict_gen["RiaritHssbg"] = RiaritHssbg

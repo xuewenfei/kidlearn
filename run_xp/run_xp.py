@@ -222,13 +222,13 @@ def gen_set_zpdes_confs(nb_group_per_xp=10, nb_conf_to_test=None, main_act="KT6k
 
         zpdes_conf = [x[first_conf:last_conf] for x in all_zpdes_confs]
 
-        print "i %s nbconf %s, z %s" % (i, nb_conf,len(zpdes_conf))
+        print "i %s nbconf %s, z %s" % (i, nb_conf, len(zpdes_conf))
 
         conf_ids = all_conf_ids[first_conf:last_conf]
 
         zpdes_conf_f = {conf_ids[x]: [zpdes_conf[y][x] for y in range(len(zpdes_conf))] for x in range(len(conf_ids))}
-        
-        #print zpdes_conf_f
+
+        # print zpdes_conf_f
 
         set_zpdes_confs.append(zpdes_conf_f)
 
@@ -286,7 +286,8 @@ def full_optimize_zpdes(nb_group_per_xp=10, nb_stud=1000, nb_step=100, xp_type=0
 
         # file_to_save = xp.uuid+".dat"
         if xp_type == 1:
-            jq.add_job(KidlearnJob(descr=jq.name, filename="data.dat", obj=xp_conf, step_fun="step_forward", steps=100, estimated_time=5400, virtual_env="test", requirements=jrequirements, path=jq.jobsdir, jq_path=jq.basedir))
+            jq.add_job(KidlearnJob(descr=jq.name, filename="data.dat", obj=xp_conf, step_fun="step_forward", steps=100,
+                                   estimated_time=5400, virtual_env="test", requirements=jrequirements, path=jq.jobsdir, jq_path=jq.basedir))
         else:
             jq.add_job(KidlearnJob(descr=jq.name, filename="data.dat", obj=xp_conf, step_fun="step_forward", steps=100, estimated_time=3600, path=jq.jobsdir, jq_path=jq.basedir))
 
@@ -1067,3 +1068,32 @@ def savemat(mat):
     y = np.cos(x)
 
     scipy.io.savemat('test.mat', dict(x=x, y=y))
+
+#########################
+# # Test LINUcb #########
+#########################
+
+
+def lin_ucb_test():
+    act = ["0", "1", "2", "3"]
+    linucb = k_lib.seq_manager.LinUCB()
+    linucb.set_articles(act)
+    stud = []
+    for j in range(100):
+        for i in [2, 3]:  # range(2):
+            stud.append(k_lib.student.Fstudent(f=i))
+
+    for i in range(len(stud)):
+        a = linucb.sample(0, stud[i].features, act)
+        ans = stud[i].answer(a)[0]
+        # print a
+        # print stud[i].f_num
+        # print ans
+        linucb.update(ans)
+        # raw_input()
+
+    # studtest = []
+    for i in [2, 3]:  # range(2):
+        print linucb.sample(0, k_lib.student.Fstudent(f=i).features, act)
+
+    return linucb

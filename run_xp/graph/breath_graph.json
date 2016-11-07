@@ -75,6 +75,14 @@
 
     "T3":{
         "ssbg":[["Q", "QCM"]]
+    },
+
+    "S2":{
+        "ssbg":[["typeAct"]]
+    },
+
+    "typeAct":{
+        
     }
 
 }
