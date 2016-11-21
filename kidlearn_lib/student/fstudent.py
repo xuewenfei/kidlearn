@@ -24,12 +24,19 @@ class Fstudent(Student):
 
     def __init__(self, params=None, f=None):
         Student.__init__(self, params=params)
-        features = [[0, 0, 0, 0],
-                    [1, 1, 1, 1],
-                    [2, 2, 2, 2],
-                    [3, 3, 3, 3]
+        features = [[2, 0, 0, 0],
+                    [0, 2, 0, 0],
+                    [0, 0, 2, 0],
+                    [0, 0, 0, 2]
                     ]
-        f = f #or np.random.randint(0, len(features))
+
+        #[[0, 0, 0, 0],
+        # [1, 1, 1, 1],
+        # [2, 2, 2, 2],
+        # [3, 3, 3, 3]
+        # ]
+
+        f = f  # or np.random.randint(0, len(features))
         self.f_num = f
 
         self.features = features[f]
