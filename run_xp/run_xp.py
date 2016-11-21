@@ -438,7 +438,7 @@ def kt_expe(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=100, n
     def_files_to_load["pomdp"] = {"file_name": "POMDP_{}{}".format(ref_xp, ref_pomdp), "path": "data/pomdp"}
     def_files_to_load["stud"] = "stud_{}{}".format(ref_xp, ref_stud)
     def_files_to_load["zpdes"] = "ZPDES_base"
-    #def_files_to_load["riarit"] = "RIARIT_{}".format(ref_xp)
+    # def_files_to_load["riarit"] = "RIARIT_{}".format(ref_xp)
     def_files_to_load["random"] = "RANDOM_base"
 
     for key, val in def_files_to_load.items():
@@ -447,7 +447,7 @@ def kt_expe(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=100, n
 
     pomdP = k_lib.seq_manager.POMDP(load_p=files_to_load["pomdp"])
 
-    #pomdP = k_lib.config.datafile.load_file("KT_expe_2","data/pomdp")
+    # pomdP = k_lib.config.datafile.load_file("KT_expe_2","data/pomdp")
 
     zpdes_conf_opti = {}
 
@@ -527,9 +527,9 @@ def kt_expe(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=100, n
     zpdes_conf_opti["_1"] = zpdes_params_1opti
     zpdes_conf_opti["_2"] = zpdes_params_2opti
 
-    #population_conf = func.load_json()
+    # population_conf = func.load_json()
     population = k_lib.student.Population(params_file=disruption_pop_file, directory="params_files/studModel")
-    #stud = k_lib.student.KTstudent(params=population.base_model)
+    # stud = k_lib.student.KTstudent(params=population.base_model)
     stud = k_lib.student.KTstudent(params_file=files_to_load["stud"], directory="params_files/studModel")
     nb_stud = nb_stud  # population.nb_students
 
@@ -538,14 +538,14 @@ def kt_expe(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=100, n
 
     zpdes = k_lib.seq_manager.ZpdesHssbg(zpdes_params)  # params=zpdes_params)
     zpdesOpt = k_lib.seq_manager.ZpdesHssbg(zpdes_conf_opti[ref_pomdp])  # params=zpdes_params)
-    #riarit = k_lib.seq_manager.RiaritHssbg(params_file=files_to_load["riarit"],directory="params_files/RIARIT")
+    # riarit = k_lib.seq_manager.RiaritHssbg(params_file=files_to_load["riarit"],directory="params_files/RIARIT")
     random_params = func.load_json(file_name=files_to_load["random"], dir_path="params_files/RANDOM")
     random_params = change_graph_params(random_params, "{}_graph".format(ref_xp), ref_xp)
     random = k_lib.seq_manager.RandomSequence(random_params)
 
     ws_tab_zpdes = []
     ws_tab_zpdesOpt = []
-    #ws_tab_riarit = []
+    # ws_tab_riarit = []
     ws_tab_random = []
     ws_tab_pomdp = []
 
@@ -555,14 +555,14 @@ def kt_expe(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=100, n
         ws_tab_zpdes.append(k_lib.experimentation.WorkingSession(student=copy.deepcopy(stud), seq_manager=copy.deepcopy(zpdes)))
         ws_tab_zpdesOpt.append(k_lib.experimentation.WorkingSession(student=copy.deepcopy(stud), seq_manager=copy.deepcopy(zpdesOpt)))
         ws_tab_pomdp.append(k_lib.experimentation.WorkingSession(student=copy.deepcopy(stud), seq_manager=copy.deepcopy(pomdP)))
-        #ws_tab_riarit.append(k_lib.experimentation.WorkingSession(student=copy.deepcopy(stud), seq_manager = copy.deepcopy(riarit)))
+        # ws_tab_riarit.append(k_lib.experimentation.WorkingSession(student=copy.deepcopy(stud), seq_manager = copy.deepcopy(riarit)))
         ws_tab_random.append(k_lib.experimentation.WorkingSession(student=copy.deepcopy(stud), seq_manager=copy.deepcopy(random)))
 
     wG_zpdes = k_lib.experimentation.WorkingGroup(WorkingSessions=ws_tab_zpdes)
     wG_zpdesOpt = k_lib.experimentation.WorkingGroup(WorkingSessions=ws_tab_zpdesOpt)
     wG_pomdp = k_lib.experimentation.WorkingGroup(WorkingSessions=ws_tab_pomdp)
-    #wG_riarit = k_lib.experimentation.WorkingGroup(WorkingSessions = ws_tab_riarit)
-    #wG_random = k_lib.experimentation.WorkingGroup(WorkingSessions=ws_tab_random)
+    # wG_riarit = k_lib.experimentation.WorkingGroup(WorkingSessions = ws_tab_riarit)
+    # wG_random = k_lib.experimentation.WorkingGroup(WorkingSessions=ws_tab_random)
 
     wkgs = {
         "POMDP": [wG_pomdp],
@@ -590,8 +590,8 @@ def kt_expe(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=100, n
     values_vect = ["V{}".format(i + 1) for i in range(len(xp.KC))]
 
     draw_xp_graph(xp, type_ex=values_vect, nb_ex_type=[1] * len(xp.KC))
-    #all_mean_data = draw_xp_graph(xp,ref_xp)
-    #cost = calcul_xp_cost(xp)
+    # all_mean_data = draw_xp_graph(xp,ref_xp)
+    # cost = calcul_xp_cost(xp)
 
     if save_xp_data:
         xp.save()
@@ -620,14 +620,14 @@ def multi_kt_xp(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=10
     for ref in refs_stud:
         def_files_to_load["stud"].append("stud_{}_{}".format(ref_xp, ref))
     def_files_to_load["zpdes"] = "ZPDES_base"
-    #def_files_to_load["riarit"] = "RIARIT_{}".format(ref_xp)
+    # def_files_to_load["riarit"] = "RIARIT_{}".format(ref_xp)
     def_files_to_load["random"] = "RANDOM_base"
 
     for key, val in def_files_to_load.items():
         if key not in files_to_load.keys():
             files_to_load[key] = val
 
-    #pomdP = k_lib.config.datafile.load_file("KT_expe_2","data/pomdp")
+    # pomdP = k_lib.config.datafile.load_file("KT_expe_2","data/pomdp")
 
     zpdes_conf_opti = {}
     zpdes_params_opti = {
@@ -686,7 +686,7 @@ def multi_kt_xp(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=10
                 stud_list[refs_stud[ii]].append(k_lib.student.KTstudent(params_file=files_to_load["stud"][ii], directory="params_files/studModel"))
         population = k_lib.student.Population(stud_list=stud_list)
 
-    #stud = k_lib.student.KTstudent(params=population.base_model)
+    # stud = k_lib.student.KTstudent(params=population.base_model)
     # nb_stud = nb_stud  # population.nb_students
 
     pomdPs = []
@@ -703,7 +703,7 @@ def multi_kt_xp(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=10
 
         zpdes_params = change_graph_params(zpdes_params, "graph_{}_{}".format(ref_xp, refs_opti[i]), ref_xp)
         zpdesHs.append(k_lib.seq_manager.ZpdesHssbg(zpdes_params))
-    #riarit = k_lib.seq_manager.RiaritHssbg(params_file=files_to_load["riarit"],directory="params_files/RIARIT")
+    # riarit = k_lib.seq_manager.RiaritHssbg(params_file=files_to_load["riarit"],directory="params_files/RIARIT")
     random_params = func.load_json(file_name=files_to_load["random"], dir_path="params_files/RANDOM")
     random_params = change_graph_params(random_params, "graph_{}_{}".format(ref_xp, refs_opti[i]), ref_xp)
     random = k_lib.seq_manager.RandomSequence(random_params)
@@ -711,7 +711,7 @@ def multi_kt_xp(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=10
     ws_tab_zpdes = [[] for i in range(len(refs_opti))]
     ws_tab_zpdesOpt = [[] for i in range(len(refs_opti))]
     ws_tab_pomdp = [[] for i in range(len(refs_opti))]
-    #ws_tab_riarit = []
+    # ws_tab_riarit = []
     ws_tab_random = []
 
     for i in range(len(population.students)):
@@ -721,14 +721,14 @@ def multi_kt_xp(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=10
             ws_tab_zpdesOpt[ii].append(k_lib.experimentation.WorkingSession(
                 student=cPickle.loads(cPickle.dumps(stud, -1)), seq_manager=cPickle.loads(cPickle.dumps(zpdesOpts[ii], -1))))
             ws_tab_pomdp[ii].append(k_lib.experimentation.WorkingSession(student=cPickle.loads(cPickle.dumps(stud, -1)), seq_manager=cPickle.loads(cPickle.dumps(pomdPs[ii], -1))))
-        #ws_tab_riarit.append(k_lib.experimentation.WorkingSession(student=copy.deepcopy(stud), seq_manager = copy.deepcopy(riarit)))
+        # ws_tab_riarit.append(k_lib.experimentation.WorkingSession(student=copy.deepcopy(stud), seq_manager = copy.deepcopy(riarit)))
         ws_tab_random.append(k_lib.experimentation.WorkingSession(student=copy.deepcopy(stud), seq_manager=copy.deepcopy(random)))
 
     wG_zpdes = [k_lib.experimentation.WorkingGroup(WorkingSessions=x) for x in ws_tab_zpdes]
 
     wG_zpdes2 = [k_lib.experimentation.WorkingGroup(WorkingSessions=x) for x in ws_tab_zpdesOpt]
     wG_pomdp = [k_lib.experimentation.WorkingGroup(WorkingSessions=x) for x in ws_tab_pomdp]
-    #wG_riarit = k_lib.experimentation.WorkingGroup(WorkingSessions = ws_tab_riarit)
+    # wG_riarit = k_lib.experimentation.WorkingGroup(WorkingSessions = ws_tab_riarit)
     wG_random = k_lib.experimentation.WorkingGroup(WorkingSessions=ws_tab_random)
 
     wkgs = {
@@ -758,19 +758,19 @@ def multi_kt_xp(ref_xp="KT6kc", path_to_save="experimentation/data/", nb_step=10
     xp.run(nb_step)
 
     ref_sub_group = [copy.deepcopy(refs_opti)]
-    #draw_xp_kc_curve(xp, ref_sub_group=ref_sub_group, subgroup_treat=True)
+    # draw_xp_kc_curve(xp, ref_sub_group=ref_sub_group, subgroup_treat=True)
     # draw_xp_kc_curve(xp)
 
     values_vect = ["V{}".format(i + 1) for i in range(len(xp.KC))]
     # draw_xp_graph(xp, type_ex=values_vect, nb_ex_type=[1] * len(xp.KC), ref_sub_group=ref_sub_group)
 
-    #draw_xp_histo(xp, type_ex=values_vect, nb_ex_type=[1] * len(xp.KC),)
+    # draw_xp_histo(xp, type_ex=values_vect, nb_ex_type=[1] * len(xp.KC),)
 
-    #pvals = calcul_pvals(xp)
+    # pvals = calcul_pvals(xp)
 
-    #draw_pvals(xp, pvals)
-    #all_mean_data = draw_xp_graph(xp,ref_xp)
-    #cost = calcul_xp_cost(xp)
+    # draw_pvals(xp, pvals)
+    # all_mean_data = draw_xp_graph(xp,ref_xp)
+    # cost = calcul_xp_cost(xp)
 
     if save_xp_data:
         xp.save()
@@ -958,7 +958,7 @@ def find_opti_conf(cost_mean):
 def curve_cost_evolv(cost_mean):
     filter1_vals, stepUp_vals, upZPD_vals, deact_vals, prom_coef_vals = all_values_zpdes()
 
-    #dict_cost_conf = {}
+    # dict_cost_conf = {}
     opti_conf_key = find_opti_conf(cost_mean)[0]
 
     opti_conf = find_zpdes_conf(opti_conf_key)  # ,cost=cost_mean[opti_conf_key])
@@ -1080,7 +1080,7 @@ def lin_ucb_test():
     linucb.set_articles(act)
     stud = []
     for j in range(100):
-        for i in [2, 3]:  # range(2):
+        for i in [0, 1, 2, 3]:  # range(2):
             stud.append(k_lib.student.Fstudent(f=i))
 
     for i in range(len(stud)):
@@ -1093,7 +1093,7 @@ def lin_ucb_test():
         # raw_input()
 
     # studtest = []
-    for i in [2, 3]:  # range(2):
+    for i in [0, 1, 2, 3]:  # range(2):
         print linucb.sample(0, k_lib.student.Fstudent(f=i).features, act)
 
     return linucb
