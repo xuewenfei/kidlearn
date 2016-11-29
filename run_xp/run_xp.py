@@ -1075,17 +1075,35 @@ def savemat(mat):
 
 
 def lin_ucb_test():
-    act = ["0", "1", "2", "3"]
-    linucb = k_lib.seq_manager.LinUCB()
+    act = ["0", "1", "2", "3"]  # , "4", "5"]
+    act_features = [[1, 0, 0, 0, 1, 0, 0],
+                    [0, 1, 0, 0, 0, 1, 0],
+                    [0, 0, 1, 0, 0, 1, 0],
+                    [0, 0, 0, 1, 1, 0, 0]]
+
+    features = [[1, 0, 0, 0, 1, 0, 0],  # 1, 0, 0],
+                [0, 1, 0, 0, 0, 1, 0],  # 0, 1, 0],
+                [0, 0, 1, 0, 0, 1, 0],  # 1, 0, 0],
+                [0, 0, 0, 1, 1, 0, 0]]  # , 0, 0, 1]]
+
+    linucb = k_lib.seq_manager.LinUCB(student_fea_dim=len(features[0]))
+    #  linucb = k_lib.seq_manager.HybridUCB()
     linucb.set_articles(act)
     stud = []
+
+#     features = [[1, 0, 0, 0, 1, 0],
+#                [0, 1, 0, 0, 0, 1],
+#                [0, 0, 1, 0, 1, 0],
+#                [0, 0, 0, 1, 0, 1]]
+
     for j in range(100):
         for i in [0, 1, 2, 3]:  # range(2):
-            stud.append(k_lib.student.Fstudent(f=i))
+            stud.append(k_lib.student.Fstudent(f=i, features=features))
 
     for i in range(len(stud)):
         a = linucb.sample(0, stud[i].features, act)
-        ans = stud[i].answer(a)[0]
+        act_index = act.index(a)
+        ans = stud[i].answer(a, act_features[act_index])
         # print a
         # print stud[i].f_num
         # print ans
@@ -1094,6 +1112,8 @@ def lin_ucb_test():
 
     # studtest = []
     for i in [0, 1, 2, 3]:  # range(2):
-        print linucb.sample(0, k_lib.student.Fstudent(f=i).features, act)
-
+        act_proposed = [0] * 4
+        for j in range(1000):
+            act_proposed[int(linucb.sample(0, k_lib.student.Fstudent(f=i, features=features).features, act))] += 1
+        print act_proposed
     return linucb
