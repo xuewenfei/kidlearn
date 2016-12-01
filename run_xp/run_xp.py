@@ -1076,19 +1076,19 @@ def savemat(mat):
 
 def lin_ucb_test():
     act = ["0", "1", "2", "3"]  # , "4", "5"]
-    act_features = [[1, 0, 0, 0, 1, 0, 0],
-                    [0, 1, 0, 0, 0, 1, 0],
-                    [0, 0, 1, 0, 0, 1, 0],
-                    [0, 0, 0, 1, 1, 0, 0]]
+    act_features = [[1, 1, 1, 1],  # 1, 0, 0, 1],  # 1, 0, 1, 0, 0],
+                    [1, 1, 1, 1],  # 1, 0, 0, 1],  # 1, 0, 0, 1, 0],
+                    [1, 1, 1, 1],  # 1, 0, 0, 1],  # 1, 0, 0, 1, 0],
+                    [1, 1, 1, 1]]  # ,# 1, 0, 0, 1]]  # ,# 1, 0, 1, 0, 0]]
 
-    features = [[1, 0, 0, 0, 1, 0, 0],  # 1, 0, 0],
-                [0, 1, 0, 0, 0, 1, 0],  # 0, 1, 0],
-                [0, 0, 1, 0, 0, 1, 0],  # 1, 0, 0],
-                [0, 0, 0, 1, 1, 0, 0]]  # , 0, 0, 1]]
+    features = [[1, 0, 0, 0],  # 1, 0, 0],  # 1, 0, 0],
+                [0, 1, 0, 0],  # 0, 1, 0],  # 0, 1, 0],
+                [0, 0, 1, 0],  # 0, 1, 0],  # 1, 0, 0],
+                [0, 0, 0, 1]]  # ,# 1, 0, 0]]  # , 0, 0, 1]]
 
-    linucb = k_lib.seq_manager.LinUCB(student_fea_dim=len(features[0]))
+    linucb = k_lib.seq_manager.LinUCB(student_fea_dim=len(features[0]) + len(act_features[0]))
     #  linucb = k_lib.seq_manager.HybridUCB()
-    linucb.set_articles(act)
+    linucb.set_actions(act)
     stud = []
 
 #     features = [[1, 0, 0, 0, 1, 0],
@@ -1101,7 +1101,7 @@ def lin_ucb_test():
             stud.append(k_lib.student.Fstudent(f=i, features=features))
 
     for i in range(len(stud)):
-        a = linucb.sample(0, stud[i].features, act)
+        a = linucb.sample(0, stud[i].features, act, act_features)
         act_index = act.index(a)
         ans = stud[i].answer(a, act_features[act_index])
         # print a
@@ -1114,6 +1114,6 @@ def lin_ucb_test():
     for i in [0, 1, 2, 3]:  # range(2):
         act_proposed = [0] * 4
         for j in range(1000):
-            act_proposed[int(linucb.sample(0, k_lib.student.Fstudent(f=i, features=features).features, act))] += 1
+            act_proposed[int(linucb.sample(0, k_lib.student.Fstudent(f=i, features=features).features, act, act_features))] += 1
         print act_proposed
     return linucb
