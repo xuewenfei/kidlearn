@@ -1074,21 +1074,60 @@ def savemat(mat):
 #########################
 
 
-def lin_ucb_test():
-    act = ["0", "1", "2", "3"]  # , "4", "5"]
-    act_features = [[1, 1, 1, 1],  # 1, 0, 0, 1],  # 1, 0, 1, 0, 0],
-                    [1, 1, 1, 1],  # 1, 0, 0, 1],  # 1, 0, 0, 1, 0],
-                    [1, 1, 1, 1],  # 1, 0, 0, 1],  # 1, 0, 0, 1, 0],
-                    [1, 1, 1, 1]]  # ,# 1, 0, 0, 1]]  # ,# 1, 0, 1, 0, 0]]
+def lin_ucb_test(nb_features=13, nb_act=6, nb_new_stud=6):
+    act = ["{}".format(i) for i in range(nb_act)]  # , "4", "5"]
 
-    features = [[1, 0, 0, 0],  # 1, 0, 0],  # 1, 0, 0],
-                [0, 1, 0, 0],  # 0, 1, 0],  # 0, 1, 0],
-                [0, 0, 1, 0],  # 0, 1, 0],  # 1, 0, 0],
-                [0, 0, 0, 1]]  # ,# 1, 0, 0]]  # , 0, 0, 1]]
 
-    linucb = k_lib.seq_manager.LinUCB(student_fea_dim=len(features[0]) + len(act_features[0]))
+    features = [[0, 0.1],  # 1, 0, 0],  # 1, 0, 0],
+                [1, 0.1],  # 0, 1, 0],  # 0, 1, 0],
+                [0, 0.9],  # 0, 1, 0],  # 1, 0, 0],
+                [1, 0.9],
+                [0, 0.5],
+                [1, 0.5]]  # ,# 1, 0, 0]]  # , 0, 0, 1]]
+
+    features = []
+
+    for i in range(nb_act):
+        features.append(np.random.choice([0, 1], size=nb_features, p=[0.5, 0.5]))
+
+    for i in range(nb_new_stud):
+        mask = np.random.randint(0, 2, size=len(features[0])).astype(np.bool)
+        j = np.random.randint(0, nb_act)
+
+        new = copy.deepcopy(features[j])
+
+        for k in range(len(mask)):
+            if bool(mask[k]) is True:
+                new[k] = 1 - new[k]
+        features.append(new)
+
+    for i in range(len(features)):
+        features[i] = np.append(features[i], [1])
+
+    # features = [np.array(i) / sum(i) for i in features]
+    # print features
+    features = [(np.array([f]) * np.array([f]).T).flatten() for f in features]
+
+    distances = []
+    for i in range(nb_act, len(features)):
+        dist = []
+        for j in range(0, nb_act):
+            if j != i:
+                dist.append(np.count_nonzero(features[i] != features[j]))
+            else:
+                dist.append(len(features[i]))
+        distances.append(dist)
+
+    act_features = copy.deepcopy(features[0:4])
+    # for i in range(nb_act):
+    #    act_features.append(np.random.choice([0, 1], size=nb_features, p=[0.5, 0.5]))
+    act_features = [(np.array([f]) * np.array([f]).T).flatten() for f in act_features]
+
+    print len(features[0])
+
+    linucb = k_lib.seq_manager.LinUCB(student_fea_dim=len(features[0]), all_features=features)
     #  linucb = k_lib.seq_manager.HybridUCB()
-    linucb.set_actions(act)
+    linucb.set_actions(act, len(features[0]))
     stud = []
 
 #     features = [[1, 0, 0, 0, 1, 0],
@@ -1096,24 +1135,29 @@ def lin_ucb_test():
 #                [0, 0, 1, 0, 1, 0],
 #                [0, 0, 0, 1, 0, 1]]
 
-    for j in range(100):
-        for i in [0, 1, 2, 3]:  # range(2):
+    for j in range(1000):
+        for i in range(nb_act):
             stud.append(k_lib.student.Fstudent(f=i, features=features))
 
     for i in range(len(stud)):
-        a = linucb.sample(0, stud[i].features, act, act_features)
+        a = linucb.sample(0, stud[i].features, act)  # , act_features)
         act_index = act.index(a)
-        ans = stud[i].answer(a, act_features[act_index])
+        ans = stud[i].answer(a)  # , act_features[act_index])
+        act_index
         # print a
         # print stud[i].f_num
         # print ans
         linucb.update(ans)
         # raw_input()
-
+    # for k in sorted(linucb.theta.keys()):
+    #     print k, linucb.theta[k]
     # studtest = []
-    for i in [0, 1, 2, 3]:  # range(2):
-        act_proposed = [0] * 4
+    for d in distances:
+        print d
+    for i in range(len(features)):
+        act_proposed = [0] * nb_act
         for j in range(1000):
             act_proposed[int(linucb.sample(0, k_lib.student.Fstudent(f=i, features=features).features, act, act_features))] += 1
+
         print act_proposed
     return linucb

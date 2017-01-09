@@ -1,0 +1,12 @@
+{
+    "act_prime" : "explainFeatures",
+    "ncompetencies":1,
+    "explainFeatures":{
+        "actions":["Author", "lenght", "content"],
+        "h":[0],
+        "nb_stay":[1],
+        "ssbg":[["A1", "A2", "A3", "A4"],
+                ["0-5", "5-10","10-15","15-20"],
+                ["T1", "T2","T3","T4"]]
+        }
+}
