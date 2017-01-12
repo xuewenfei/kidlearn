@@ -1074,16 +1074,10 @@ def savemat(mat):
 #########################
 
 
-def lin_ucb_test(nb_features=13, nb_act=6, nb_new_stud=6):
+def lin_ucb_test(nb_features=13, nb_act=6, nb_new_stud=6, nb_stud_train=1000, nb_stud_test=1000):
     act = ["{}".format(i) for i in range(nb_act)]  # , "4", "5"]
 
-
-    features = [[0, 0.1],  # 1, 0, 0],  # 1, 0, 0],
-                [1, 0.1],  # 0, 1, 0],  # 0, 1, 0],
-                [0, 0.9],  # 0, 1, 0],  # 1, 0, 0],
-                [1, 0.9],
-                [0, 0.5],
-                [1, 0.5]]  # ,# 1, 0, 0]]  # , 0, 0, 1]]
+    print "intit"
 
     features = []
 
@@ -1135,11 +1129,13 @@ def lin_ucb_test(nb_features=13, nb_act=6, nb_new_stud=6):
 #                [0, 0, 1, 0, 1, 0],
 #                [0, 0, 0, 1, 0, 1]]
 
-    for j in range(1000):
+    for j in range(nb_stud_train):
         for i in range(nb_act):
             stud.append(k_lib.student.Fstudent(f=i, features=features))
 
+    print "training"
     for i in range(len(stud)):
+        #print "stud {}".format(i+1)
         a = linucb.sample(0, stud[i].features, act)  # , act_features)
         act_index = act.index(a)
         ans = stud[i].answer(a)  # , act_features[act_index])
@@ -1148,16 +1144,24 @@ def lin_ucb_test(nb_features=13, nb_act=6, nb_new_stud=6):
         # print stud[i].f_num
         # print ans
         linucb.update(ans)
+        if i % (len(stud) / 10) == 0:
+            print "stud {}".format(i)
         # raw_input()
     # for k in sorted(linucb.theta.keys()):
     #     print k, linucb.theta[k]
     # studtest = []
+
+    print "training_finished"
+    print "distances"
+
     for d in distances:
         print d
+
+    print "test"
     for i in range(len(features)):
         act_proposed = [0] * nb_act
-        for j in range(1000):
+        for j in range(nb_stud_test):
             act_proposed[int(linucb.sample(0, k_lib.student.Fstudent(f=i, features=features).features, act, act_features))] += 1
-
         print act_proposed
+
     return linucb
