@@ -1075,6 +1075,8 @@ def savemat(mat):
 
 
 def lin_ucb_test(nb_features=13, nb_act=6, nb_new_stud=6, nb_stud_train=1000, nb_stud_test=1000):
+
+    # 
     act = ["{}".format(i) for i in range(nb_act)]  # , "4", "5"]
 
     print "intit"
@@ -1139,7 +1141,6 @@ def lin_ucb_test(nb_features=13, nb_act=6, nb_new_stud=6, nb_stud_train=1000, nb
         a = linucb.sample(0, stud[i].features, act)  # , act_features)
         act_index = act.index(a)
         ans = stud[i].answer(a)  # , act_features[act_index])
-        act_index
         # print a
         # print stud[i].f_num
         # print ans
@@ -1164,4 +1165,10 @@ def lin_ucb_test(nb_features=13, nb_act=6, nb_new_stud=6, nb_stud_train=1000, nb
             act_proposed[int(linucb.sample(0, k_lib.student.Fstudent(f=i, features=features).features, act, act_features))] += 1
         print act_proposed
 
+    return linucb
+
+def one_train_LinUCB(linucb, stud, act):
+    a = linucb.sample(0, stud.features, act)
+    ans = stud.answer(a)
+    linucb.update(ans)
     return linucb

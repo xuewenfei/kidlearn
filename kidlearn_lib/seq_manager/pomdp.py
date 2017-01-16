@@ -468,24 +468,13 @@ class POMDP(object):
 #########################################################################################
 
 
-def softmax(w, t=0.10):
-    if min(w) != max(w):
-        w = (np.array(w) - min(w))
-        w = w / max(w)
-        e = np.exp(w / t)
-        dist = e / np.sum(e)
-        return dist
-    else:
-        return [1.0 / len(w)] * len(w)
-
-
 def greedy(mode, U):
     # print U
     # print np.shape(U)
     # raw_input()
     #Idx = np.argmax(U, axis=0)
     if mode == "prob":
-        p = softmax(U)
+        p = func.softmax(U)
         a = func.dissample(p)
 
     else:

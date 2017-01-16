@@ -540,13 +540,13 @@ class Experiment(object):
             for seq_name, group in kc_data[kc].items():
                 if subgroup_treat is False:
                     mean_data[iii].append([np.mean([group[i][x] for i in range(len(group))]) for x in range(len(group[0]))])
-                    #std_data[iii].append([np.std([group[i][x] for i in range(len(group))]) for x in range(len(group[0]))])#/np.sqrt(len(group[0][x]))
-                    std_data[iii].append([np.std([group[i][x] for i in range(len(group))])/np.sqrt(len(group[0][x])) for x in range(len(group[0]))])
+                    # std_data[iii].append([np.std([group[i][x] for i in range(len(group))]) for x in range(len(group[0]))])#/np.sqrt(len(group[0][x]))
+                    std_data[iii].append([np.std([group[i][x] for i in range(len(group))]) / np.sqrt(len(group[0][x])) for x in range(len(group[0]))])
 
                 else:
                     for subgroup in group:
                         mean_data[iii].append([np.mean(subgroup[x]) for x in range(len(subgroup))])
-                        std_data[iii].append([np.std(subgroup[x])/np.sqrt(len(subgroup[x])) for x in range(len(subgroup))])
+                        std_data[iii].append([np.std(subgroup[x]) / np.sqrt(len(subgroup[x])) for x in range(len(subgroup))])
                 iii += 1
 
             mean_std_data.append({"mean": mean_data, "std": std_data})

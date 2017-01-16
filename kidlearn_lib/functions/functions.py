@@ -129,20 +129,30 @@ def fill_data(data, nb_data_expected):
     complete_data = data + [data[-1]] * (nb_data_expected - len(data))
     return complete_data
 
-# Regex special slip
-
 
 def spe_split(regex, line):
+    # Regex special slip
     tmp = re.split(regex, line)
     tmp = [x for x in tmp if x not in [None, '']]
     return tmp
 
-# SSB function to sample bandit
-
 
 def dissample(p):
+    # SSB function to sample bandit
     s = np.random.multinomial(1, p)
     return np.nonzero(s == 1)[0][0]
+
+
+def softmax(w, t=0.10):
+    # softmax
+    if min(w) != max(w):
+        w = (np.array(w) - min(w))
+        w = w / max(w)
+        e = np.exp(w / t)
+        dist = e / np.sum(e)
+        return dist
+    else:
+        return [1.0 / len(w)] * len(w)
 
 # Default value for argument from dictionaries
 

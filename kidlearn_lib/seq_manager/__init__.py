@@ -1,10 +1,11 @@
-from .hssbg import * #HierarchicalSSBG 
-from .riarit import *  #RiaritHssbg
-from .zpdes import * #ZpdesHssbg
+from .hssbg import *  # HierarchicalSSBG
+from .riarit import *  # RiaritHssbg
+from .zpdes import *  # ZpdesHssbg
 from .teacher_sequence import Sequence
 from .random_sequence import RandomSequence
-from .pomdp import POMDP,perseus
+from .pomdp import POMDP, perseus
 from .linucb_d import LinUCB
+from .linucb_h import HybridUCB
 
 seq_dict_gen = {}
 seq_dict_gen["RiaritHssbg"] = RiaritHssbg

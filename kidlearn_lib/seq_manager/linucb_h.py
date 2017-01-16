@@ -16,6 +16,8 @@ import math
 import sys
 from scipy import linalg
 
+from .. import functions as func
+
 
 class HybridUCB:
     def __init__(self):
@@ -26,7 +28,7 @@ class HybridUCB:
         self.r1 = 0.5
         self.r0 = -20
         # dimension of user features = d
-        self.d = 5
+        self.d = 4
         # dimension of article features = k
         self.k = self.d * self.d
         # A0 : matrix to compute hybrid part, k*k
@@ -58,7 +60,7 @@ class HybridUCB:
         self.a_max = 0
 
         self.z = None
-        self.zT = Nonein htdocs folder
+        self.zT = None  # in htdocs folder
         self.xaT = None
         self.xa = None
 
@@ -176,8 +178,7 @@ class HybridUCB:
         sa_1_tmp = np.sum(za_tmp.reshape(article_len, self.k, 1, 1) * A0Iza_diff_2A0IBaTAaIxa_tmp.reshape(article_len, self.k, 1, 1), -3)
 
         # np.dot(AaIBa_tmp, A0IBaTAaIxa_tmp)
-        AaIxa_add_AaIBaA0IBaTAaIxa_tmp = np.dot(self.AaI[index], self.xa) + np.sum(np.transpose(self.AaIBa[index], (0, 2, 1)
-                                                                                                ).reshape(article_len, self.k, self.d, 1) * A0IBaTAaIxa_tmp.reshape(article_len, self.k, 1, 1), -3)
+        AaIxa_add_AaIBaA0IBaTAaIxa_tmp = np.dot(self.AaI[index], self.xa) + np.sum(np.transpose(self.AaIBa[index], (0, 2, 1)).reshape(article_len, self.k, self.d, 1) * A0IBaTAaIxa_tmp.reshape(article_len, self.k, 1, 1), -3)
         sa_2_tmp = np.transpose(np.dot(np.transpose(AaIxa_add_AaIBaA0IBaTAaIxa_tmp, (0, 2, 1)), self.xa), (0, 2, 1))
         sa_tmp = sa_1_tmp + sa_2_tmp
         # np.dot(self.xaT, self.theta[article])
@@ -199,139 +200,3 @@ class HybridUCB:
         #     print entries, evaluated, clicked, clicked / evaluated
 
         return articles[max_index]
-
-# lin UCB
-
-
-class LinUCB:
-    def __init__(self):
-        # upper bound coefficient
-        self.alpha = 0.25  # if worse -> 2.9, 2.8 1 + np.sqrt(np.log(2/delta)/2)
-        self.r1 = 1  # if worse -> 0.7, 0.8
-        self.r0 = 0  # if worse, -19, -21
-        # dimension of user features = d
-        self.d = 6
-        # Aa : collection of matrix to compute disjoint part for each article a, d*d
-        self.Aa = {}
-        # AaI : store the inverse of all Aa matrix
-        self.AaI = {}
-        # ba : collection of vectors to compute disjoin part, d*1
-        self.ba = {}
-
-        self.a_max = 0
-
-        self.theta = {}
-
-        self.x = None
-        self.xT = None
-        # linUCB
-
-    def get_Aa(self):
-        return self.Aa
-
-    def set_Aa(self, Aa):
-        self.Aa = Aa
-
-    def get_ba(self):
-        return self.ba
-
-    def set_ba(self, ba):
-        self.ba = ba
-
-    def get_AaI(self):
-        return self.AaI
-
-    def set_AaI(self, AaI):
-        self.AaI = AaI
-
-    def get_theta(self):
-        return self.theta
-
-    def set_theta(self, theta):
-        self.theta = theta
-
-    def set_articles(self, art):
-        # init collection of matrix/vector Aa, Ba, ba
-        for key in art:
-            self.Aa[key] = np.identity(self.d)
-            self.ba[key] = np.zeros((self.d, 1))
-            self.AaI[key] = np.identity(self.d)
-            self.theta[key] = np.zeros((self.d, 1))
-
-    def update(self, reward):
-        if reward == -1:
-            pass
-        elif reward == 1 or reward == 0:
-            if reward == 1:
-                r = self.r1
-            else:
-                r = self.r0
-            self.Aa[self.a_max] += np.dot(self.x, self.xT)
-            self.ba[self.a_max] += r * self.x
-            self.AaI[self.a_max] = linalg.solve(self.Aa[self.a_max], np.identity(self.d))
-            self.theta[self.a_max] = np.dot(self.AaI[self.a_max], self.ba[self.a_max])
-        else:
-            # error
-            pass
-
-    def reccomend(self, timestamp, user_features, articles):
-        xaT = np.array([user_features])
-        xa = np.transpose(xaT)
-        art_max = -1
-        old_pa = 0
-
-        AaI_tmp = np.array([self.AaI[article] for article in articles])
-        theta_tmp = np.array([self.theta[article] for article in articles])
-        art_max = articles[np.argmax(np.dot(xaT, theta_tmp) + self.alpha * np.sqrt(np.dot(np.dot(xaT, AaI_tmp), xa)))]
-
-        self.x = xa
-        self.xT = xaT
-        # article index with largest UCB
-        self.a_max = art_max
-
-        return self.a_max
-
-LinUCBObj = None
-HybridUCBObj = None
-
-t = 0
-break_point = 0
-
-
-def set_articles(art):
-    global HybridUCBObj, LinUCBObj
-    LinUCBObj = LinUCB()
-    HybridUCBObj = HybridUCB()
-    LinUCBObj.set_articles(art)
-    HybridUCBObj.set_articles(art)
-    #UCB2Obj = UCB2()
-    # UCB2Obj.set_articles(art)
-
-
-def update(reward):
-    if t < break_point:
-        return LinUCBObj.update(reward)
-    else:
-        return HybridUCBObj.update(reward)
-
-# This function will be called by the evaluator.
-# Check task description for details.
-
-
-def reccomend(timestamp, user_features, articles):
-    global t
-    t += 1
-
-    if t == break_point:
-        HybridUCBObj.set_Aa(LinUCBObj.get_Aa())
-        HybridUCBObj.set_ba(LinUCBObj.get_ba())
-        HybridUCBObj.set_AaI(LinUCBObj.get_AaI())
-        HybridUCBObj.set_theta(LinUCBObj.get_theta())
-
-    if t < break_point:
-        return LinUCBObj.reccomend(timestamp, user_features, articles)
-    else:
-        return HybridUCBObj.reccomend(timestamp, user_features, articles)
-
-Contact GitHub API Training Shop Blog About
-© 2016 GitHub, Inc. Terms Privacy Security Status Help
