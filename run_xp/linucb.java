@@ -13,13 +13,11 @@ public class LinUCb extends Policy
     private double r1;
     private double r0;
     private int d;
-    
+
 
     public LinUCb(PolicyData policyData)
     {
         alpha = 3
     }
-
-
 
 }

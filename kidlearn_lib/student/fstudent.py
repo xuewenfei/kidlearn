@@ -37,10 +37,9 @@ class Fstudent(Student):
         # [3, 3, 3, 3]
         # ]
 
-        f = f  # or np.random.randint(0, len(features))
-        self.f_num = f
+        self.f_num = f # or np.random.randint(0, len(features))
 
-        self.features = features[f]
+        self.features = features
 
     def answer(self, act, act_feat=None):
         if act_feat is None:

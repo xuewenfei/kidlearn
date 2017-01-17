@@ -48,6 +48,7 @@ class LinUCB(object):
         # linUCB
 
     def set_actions(self, act, dim_feat=4):
+        self.act = act
         # init collection of matrix/vector Aa, Ba, ba
         for key in act:
             self.Aa[key] = np.identity(self.d)

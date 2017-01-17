@@ -1074,21 +1074,55 @@ def savemat(mat):
 #########################
 
 
-def lin_ucb_test(nb_features=13, nb_act=6, nb_new_stud=6, nb_stud_train=1000, nb_stud_test=1000):
+def lin_ucb_test(nb_features=13, nb_act=6, nb_training_stud=6, nb_testing_stud=6, nb_train_step=1000, nb_test_it=1000):
 
     # 
     act = ["{}".format(i) for i in range(nb_act)]  # , "4", "5"]
 
     print "intit"
 
-    features = []
+    stud_features = compute_features(nb_training_stud, nb_testing_stud, nb_features)
 
-    for i in range(nb_act):
+    act_features = copy.deepcopy(stud_features[0:4])
+
+    print len(stud_features[0])
+
+    print "intentiate linucb"
+    linucb = k_lib.seq_manager.LinUCB(student_fea_dim=len(stud_features[0]), all_features=stud_features)
+    #  linucb = k_lib.seq_manager.HybridUCB()
+    linucb.set_actions(act, len(stud_features[0]))
+    
+    print "intentiate students"
+    stud_list = []
+    for j in range(nb_train_step):
+        for i in range(nb_act):
+            stud_list.append(k_lib.student.Fstudent(f=i, features=stud_features[i]))
+
+    print "training"
+    multi_train_LinUCB(linucb, stud_list, act)
+    print "training_finished"
+
+    print "distances"
+    distances = compute_distances(nb_training_stud, stud_features)
+    for d in distances:
+        print d
+
+    print "test"
+    test_results = test_multi_profiles_linucb(linucb, nb_test_it, act, stud_features, act_features=None)
+    print test_results
+
+    return linucb
+
+# Compute features / student #
+
+def compute_features(nb_training_stud, nb_testing_stud, nb_features):
+    features = []
+    for i in range(nb_training_stud):
         features.append(np.random.choice([0, 1], size=nb_features, p=[0.5, 0.5]))
 
-    for i in range(nb_new_stud):
+    for i in range(nb_testing_stud):
         mask = np.random.randint(0, 2, size=len(features[0])).astype(np.bool)
-        j = np.random.randint(0, nb_act)
+        j = np.random.randint(0, nb_training_stud)
 
         new = copy.deepcopy(features[j])
 
@@ -1100,71 +1134,20 @@ def lin_ucb_test(nb_features=13, nb_act=6, nb_new_stud=6, nb_stud_train=1000, nb
     for i in range(len(features)):
         features[i] = np.append(features[i], [1])
 
-    # features = [np.array(i) / sum(i) for i in features]
-    # print features
     features = [(np.array([f]) * np.array([f]).T).flatten() for f in features]
 
-    distances = []
-    for i in range(nb_act, len(features)):
-        dist = []
-        for j in range(0, nb_act):
-            if j != i:
-                dist.append(np.count_nonzero(features[i] != features[j]))
-            else:
-                dist.append(len(features[i]))
-        distances.append(dist)
+    return features
 
-    act_features = copy.deepcopy(features[0:4])
-    # for i in range(nb_act):
-    #    act_features.append(np.random.choice([0, 1], size=nb_features, p=[0.5, 0.5]))
-    act_features = [(np.array([f]) * np.array([f]).T).flatten() for f in act_features]
+# Compute features / student end#
+################################################
 
-    print len(features[0])
+#Training func#
 
-    linucb = k_lib.seq_manager.LinUCB(student_fea_dim=len(features[0]), all_features=features)
-    #  linucb = k_lib.seq_manager.HybridUCB()
-    linucb.set_actions(act, len(features[0]))
-    stud = []
-
-#     features = [[1, 0, 0, 0, 1, 0],
-#                [0, 1, 0, 0, 0, 1],
-#                [0, 0, 1, 0, 1, 0],
-#                [0, 0, 0, 1, 0, 1]]
-
-    for j in range(nb_stud_train):
-        for i in range(nb_act):
-            stud.append(k_lib.student.Fstudent(f=i, features=features))
-
-    print "training"
-    for i in range(len(stud)):
-        #print "stud {}".format(i+1)
-        a = linucb.sample(0, stud[i].features, act)  # , act_features)
-        act_index = act.index(a)
-        ans = stud[i].answer(a)  # , act_features[act_index])
-        # print a
-        # print stud[i].f_num
-        # print ans
-        linucb.update(ans)
-        if i % (len(stud) / 10) == 0:
+def multi_train_LinUCB(linucb, stud_list, act):
+    for i in range(len(stud_list)):
+        one_train_LinUCB(linucb,stud_list[i], act)
+        if i % (len(stud_list) / 10) == 0:
             print "stud {}".format(i)
-        # raw_input()
-    # for k in sorted(linucb.theta.keys()):
-    #     print k, linucb.theta[k]
-    # studtest = []
-
-    print "training_finished"
-    print "distances"
-
-    for d in distances:
-        print d
-
-    print "test"
-    for i in range(len(features)):
-        act_proposed = [0] * nb_act
-        for j in range(nb_stud_test):
-            act_proposed[int(linucb.sample(0, k_lib.student.Fstudent(f=i, features=features).features, act, act_features))] += 1
-        print act_proposed
-
     return linucb
 
 def one_train_LinUCB(linucb, stud, act):
@@ -1172,3 +1155,43 @@ def one_train_LinUCB(linucb, stud, act):
     ans = stud.answer(a)
     linucb.update(ans)
     return linucb
+
+#Training func end#
+##################################
+
+#Testin func#
+
+def test_multi_profiles_linucb(linucb, nb_test_it, act, stud_features, act_features=None):
+    test_results = [[] for i in range(len(stud_features))]
+    for num_f in range(len(stud_features)):
+        act_proposed = test_one_profile_linucb(linucb, nb_test_it, act, num_f, stud_features[num_f], act_features)
+        test_results.append(act_proposed)
+
+    return test_results
+
+def test_one_profile_linucb(linucb, nb_test_it, act, num_f, stud_features, act_features=None):
+    act_proposed = [0] * len(act)
+    for j in range(nb_test_it):
+        act_proposed[int(linucb.sample(0, k_lib.student.Fstudent(f=num_f, features=stud_features).features, act, act_features))] += 1
+
+    return act_proposed
+
+#testing func end#
+###################################
+
+#Analyse func#
+
+def compute_distances(nb_training_stud, features):
+    distances = []
+    for i in range(nb_training_stud, len(features)):
+        dist = []
+        for j in range(0, nb_training_stud):
+            if j != i:
+                dist.append(np.count_nonzero(features[i] != features[j]))
+            else:
+                dist.append(len(features[i]))
+        distances.append(dist)
+
+    return distances
+
+#Analyse func end#
