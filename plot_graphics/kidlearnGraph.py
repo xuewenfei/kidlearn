@@ -1034,6 +1034,8 @@ def draw_simple_curves(data, stdData=None, x_range=None, y_range=None, labels=No
 
 def draw_curve(data, path="", labels=[["Predefined", "RiARiT", "ZPDES"]], nb_ex=100, typeData="successRate", type_data_spe="MAIN", ref="", markers=None, titleC="", colors=[["#00BBBB", "black", '#FF0000']], line_type=['dashed', 'solid', 'dashdot', 'dotted'], legend_position=1, showPlot=True, std_data=None, lineWidths=[2, 2, 3, 3, 3, 3]):
 
+    # data format : range(x) = range(len(data[nbPdata][group])) 
+
     plt.cla()
     plt.clf()
     plt.close()
@@ -1052,7 +1054,10 @@ def draw_curve(data, path="", labels=[["Predefined", "RiARiT", "ZPDES"]], nb_ex=
     plt.xlabel(xylabels[0], fontsize=30)
     plt.ylabel(xylabels[1], fontsize=30)
 
-    colorsBis = colors  # gen_colors(data)
+    if colors is None:
+        colorsBis = gen_colors(data)
+    else:
+        colorsBis = colors
 
     plt.xticks(fontsize=30)
     plt.yticks(fontsize=30)
@@ -1121,6 +1126,8 @@ def draw_curve(data, path="", labels=[["Predefined", "RiARiT", "ZPDES"]], nb_ex=
         plt.legend(bbox_to_anchor=(0, 0, 0.2, 1), ncol=1, fancybox=True, shadow=True, prop={'size': 24})
     elif legend_position == 2:
         plt.legend(bbox_to_anchor=(0, 0, 1.1, 0), ncol=1, fancybox=True, shadow=True, prop={'size': 24})
+    elif legend_position == 3:
+        plt.legend(bbox_to_anchor=(0, 0, 1, 0), ncol=3, fancybox=True, shadow=True, prop={'size': 14})
     else:
         plt.legend(bbox_to_anchor=(0, 0, 1, 0.3), ncol=3, fancybox=True, shadow=True, prop={'size': 24})
 

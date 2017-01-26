@@ -172,7 +172,13 @@ def access_dict_value(params, dict_keys, replace=None):
     if len(dict_keys) > 1:
         return access_dict_value(params[dict_keys[0]], dict_keys[1:], replace)
     else:
-        if replace != None:
+        if replace is not None:
             params[dict_keys[0]] = replace
         else:
             return params[dict_keys[0]]
+
+
+def test_and_transfor_to_list(inputs):
+    if type(inputs) != list:
+        inputs = [inputs]
+    return inputs

@@ -22,7 +22,7 @@ from .. import functions as func
 
 
 class LinUCB(object):
-    def __init__(self, student_fea_dim=4, all_features=None):
+    def __init__(self, student_fea_dim=4, all_features=None, actions=None):
         # upper bound coefficient
         self.all_features = all_features
         self.alpha = 3  # if worse -> 2.9, 2.8 1 + np.sqrt(np.log(2/delta)/2)
@@ -45,6 +45,9 @@ class LinUCB(object):
         self.theta = {}
         self.x = None
         self.xT = None
+
+        if actions is not None:
+            self.set_actions(actions, self.d)
         # linUCB
 
     def set_actions(self, act, dim_feat=4):
@@ -67,21 +70,22 @@ class LinUCB(object):
         # r.fit(self.c_hist[self.a_max], self.r_hist[self.a_max])
         # self.pred[self.a_max] = r
 
-        if reward == -1:
-            pass
-        elif reward == 1 or reward == 0:
-            if reward == 1:
-                r = self.r1
-            else:
-                r = self.r0
-            self.Aa[self.a_max] += self.x.dot(self.xT)
-            self.ba[self.a_max] += r * self.x
-            # self.AaI[self.a_max] = linalg.solve(self.Aa[self.a_max], np.identity(self.d))
-            self.AaI[self.a_max] = linalg.inv(self.Aa[self.a_max])
-            self.theta[self.a_max] = self.AaI[self.a_max].dot(self.ba[self.a_max])
-        else:
-            # error
-            pass
+        # if reward == -1:
+        #     pass
+        # elif reward == 1 or reward == 0:
+        # if reward == 1:
+        #     r = self.r1
+        # else:
+        #     r = self.r0
+        r = reward
+        self.Aa[self.a_max] += self.x.dot(self.xT)
+        self.ba[self.a_max] += r * self.x
+        # self.AaI[self.a_max] = linalg.solve(self.Aa[self.a_max], np.identity(self.d))
+        self.AaI[self.a_max] = linalg.inv(self.Aa[self.a_max])
+        self.theta[self.a_max] = self.AaI[self.a_max].dot(self.ba[self.a_max])
+        # else:
+        #     # error
+        #     pass
 
     def sample(self, timestamp, user_feat, actions, act_feat=None):
         # xaT = np.array([user_feat])
