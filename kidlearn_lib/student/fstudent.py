@@ -44,6 +44,7 @@ class Fstudent(Student):
         self.features = features
 
     def answer(self, act, act_feat=None, return_rNum=False):
+        raw_input()
         if self.profile is not None:
             return self.answer_joseph_mail_setup(act, return_rNum)
         elif act_feat is None:
@@ -109,16 +110,15 @@ class Fstudent(Student):
 
 
 class MailFstudent(Fstudent):
+
     def __init__(self, params=None, f=None, features=None, profile=None, probabilities=None):
         Fstudent.__init__(self, params=params, f=f, features=features, profile=profile)
         self.probabilities = probabilities
 
-
-    def anwer(self, act, num_act):
-        prob = self.probs[num_act][int(act)]
+    def answer(self, act, num_act=0):
+        prob = self.probabilities[num_act][int(act)]
         if type(prob) is list:
             ans = func.dissample(prob)
         else:
             ans = self.prob_ans(prob)
-
         return ans

@@ -84,8 +84,8 @@ class LinUCB(object):
         #     r = self.r0
         if a_max is not None:
             self.a_max = a_max
-            self.x = np.array([user_feat])
-            self.xT = np.transpose(self.x)
+            self.xT = np.array([user_feat])
+            self.x = np.transpose(self.xT)
 
         self.input_rewards[self.a_max].append(reward)
         self.compute_cumul_regret(reward)
@@ -118,7 +118,7 @@ class LinUCB(object):
         # print sum_reward
         # raw_input()
 
-    def sample(self, timestamp, user_feat, actions, act_feat=None):
+    def sample(self, user_feat, actions, act_feat=None):
         # xaT = np.array([user_feat])
         # xa = np.transpose(xaT)
         # art_max = -1
@@ -137,7 +137,8 @@ class LinUCB(object):
             p = float(np.dot(xaT, self.theta[action]) + self.alpha * np.sqrt(np.dot(xaT.dot(self.AaI[action]), xa)))
             pa.append(p)
         pa = np.array(pa)
-        #self.a_max = actions[divmod(pa.argmax(), pa.shape[0])[1]]
+        # not stoecahstique
+        self.a_max = actions[divmod(pa.argmax(), pa.shape[0])[1]]
         # print pa
         tmp_pa = copy.deepcopy(pa)
         # print func.softmax(tmp_pa)
@@ -149,7 +150,10 @@ class LinUCB(object):
         tmp = tmp_pa / sum(tmp_pa)
         # print tmp
         # print tmp
-        self.a_max = actions[func.dissample(tmp)]
+
+        # stoechastique
+        # self.a_max = actions[func.dissample(tmp)]
+        
         # raw_input()
 
         # for action in actions:

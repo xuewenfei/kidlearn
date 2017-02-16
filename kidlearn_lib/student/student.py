@@ -61,12 +61,11 @@ class Student(object):
         exercise.add_attr(_nb_try=nb_try)
         return exercise
 
-    def prob_ans(self,prob):
-        s = np.random.multinomial(1, [1 - prob_correct, prob_correct])
+    def prob_ans(self, prob):
+        s = np.random.multinomial(1, [1 - prob, prob])
         ans = np.nonzero(s == 1)[0][0]
 
         return ans
-
 
     def try_and_answer(self, prob_correct=0, exercise=None):
         nb_try = 0
