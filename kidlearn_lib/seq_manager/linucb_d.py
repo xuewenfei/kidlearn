@@ -46,6 +46,10 @@ class LinUCB(object):
         self.x = None
         self.xT = None
 
+        self.input_rewards = {}
+        self.input_stud = []
+        self.cumul_regret = []
+
         if actions is not None:
             self.set_actions(actions, self.d)
         # linUCB
@@ -54,6 +58,7 @@ class LinUCB(object):
         self.act = act
         # init collection of matrix/vector Aa, Ba, ba
         for key in act:
+            self.input_rewards[key] = []
             self.Aa[key] = np.identity(self.d)
             self.ba[key] = np.zeros((self.d, 1))
             self.AaI[key] = np.identity(self.d)
@@ -63,7 +68,7 @@ class LinUCB(object):
             # self.pred[key] = LinearRegression(fit_intercept=True)
             # self.pred[key].fit([[0] * dim_feat], [0])
 
-    def update(self, reward):
+    def update(self, reward, a_max=None, user_feat=None):
         # self.c_hist[self.a_max].append(self.xT[0])
         # self.r_hist[self.a_max].append(reward)
         # r = LinearRegression(fit_intercept=False)
@@ -77,6 +82,14 @@ class LinUCB(object):
         #     r = self.r1
         # else:
         #     r = self.r0
+        if a_max is not None:
+            self.a_max = a_max
+            self.x = np.array([user_feat])
+            self.xT = np.transpose(self.x)
+
+        self.input_rewards[self.a_max].append(reward)
+        self.compute_cumul_regret(reward)
+
         r = reward
         self.Aa[self.a_max] += self.x.dot(self.xT)
         self.ba[self.a_max] += r * self.x
@@ -87,21 +100,44 @@ class LinUCB(object):
         #     # error
         #     pass
 
+    def compute_cumul_regret(self, reward):
+        means = [np.mean(self.input_rewards[key]) for key in self.input_rewards.keys() if len(self.input_rewards[key]) > 0]
+        
+        best_arm_regret = sum([len(self.input_rewards[key]) for key in self.input_rewards.keys()]) * max(means)
+        sum_reward = sum([sum(self.input_rewards[key]) for key in self.input_rewards.keys()])
+        cumul_regret = best_arm_regret - sum_reward
+        #print cumul_regret
+        self.cumul_regret.append(cumul_regret)
+
+        # print self.input_rewards
+        # print np.sum([len(self.input_rewards[key]) for key in self.input_rewards.keys()])
+        # print means
+        # print max(means)
+        # print best_arm_regret
+        # print [sum(self.input_rewards[key]) for key in self.input_rewards.keys()]
+        # print sum_reward
+        # raw_input()
+
     def sample(self, timestamp, user_feat, actions, act_feat=None):
         # xaT = np.array([user_feat])
         # xa = np.transpose(xaT)
         # art_max = -1
         # old_pa = 0
         pa = []
+
+        xaT = np.array([user_feat])
+        xa = np.transpose(xaT)
+
         for action in actions:
             xaT = np.array([user_feat])
             xa = np.transpose(xaT)
             # print self.pred[action].predict([user_feat])
             # pa.append(float(np.array(self.pred[action].predict([user_feat])) + self.alpha * np.sqrt(np.dot(xaT.dot(self.AaI[action]), xa))))
             # print pa
-            pa.append(float(np.dot(xaT, self.theta[action]) + self.alpha * np.sqrt(np.dot(xaT.dot(self.AaI[action]), xa))))
+            p = float(np.dot(xaT, self.theta[action]) + self.alpha * np.sqrt(np.dot(xaT.dot(self.AaI[action]), xa)))
+            pa.append(p)
         pa = np.array(pa)
-        # self.a_max = actions[divmod(pa.argmax(), pa.shape[0])[1]]
+        #self.a_max = actions[divmod(pa.argmax(), pa.shape[0])[1]]
         # print pa
         tmp_pa = copy.deepcopy(pa)
         # print func.softmax(tmp_pa)
@@ -124,7 +160,7 @@ class LinUCB(object):
         #     if art_max == -1:
         #         old_pa = new_pa
         #         art_max = action
-        #     else:
+        #     else:S
         #         if old_pa < new_pa:
         #             art_max = action
         #             old_pa = new_pa
